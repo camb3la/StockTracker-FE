@@ -20,7 +20,7 @@
 
       <ng-container *ngIf="currentUser">
         <div class="user-menu">
-          <span class="username">{{ currentUser.username }}</span>
+          <span class="username">{{ currentUser?.username }}</span>
           <div class="dropdown-menu">
             <a routerLink="/profile">Profilo</a>
             <a (click)="logout()" class="logout">Logout</a>
