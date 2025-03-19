@@ -1,0 +1,32 @@
+<header class="header">
+  <div class="container">
+    <div class="logo">
+      <a routerLink="/">StockTracker</a>
+    </div>
+
+    <nav class="main-nav">
+      <ul>
+        <li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
+        <li *ngIf="currentUser"><a routerLink="/watchlist" routerLinkActive="active">Watchlist</a></li>
+        <li *ngIf="currentUser"><a routerLink="/price-analysis" routerLinkActive="active">Analisi Prezzi</a></li>
+      </ul>
+    </nav>
+
+    <div class="auth-nav">
+      <ng-container *ngIf="!currentUser">
+        <a routerLink="/login" class="btn btn-outline">Accedi</a>
+        <a routerLink="/register" class="btn btn-primary">Registrati</a>
+      </ng-container>
+
+      <ng-container *ngIf="currentUser">
+        <div class="user-menu">
+          <span class="username">{{ currentUser.username }}</span>
+          <div class="dropdown-menu">
+            <a routerLink="/profile">Profilo</a>
+            <a (click)="logout()" class="logout">Logout</a>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</header>
