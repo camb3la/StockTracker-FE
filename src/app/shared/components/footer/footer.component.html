@@ -1,0 +1,51 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <!-- Informazioni sull'applicazione -->
+      <div class="footer-section">
+        <h3>{{ companyInfo.name }}</h3>
+        <p>{{ companyInfo.description }}</p>
+        <div class="social-links">
+          <a *ngFor="let social of socialLinks" [href]="social.url" target="_blank" [attr.aria-label]="social.name">
+            <i [class]="social.icon"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Link utili -->
+      <div class="footer-section">
+        <h3>Link Utili</h3>
+        <ul>
+          <li *ngFor="let link of usefulLinks">
+            <a [routerLink]="link.url">{{ link.name }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Supporto -->
+      <div class="footer-section">
+        <h3>Supporto</h3>
+        <ul>
+          <li *ngFor="let link of supportLinks">
+            <a [routerLink]="link.url">{{ link.name }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contatti -->
+      <div class="footer-section">
+        <h3>Contattaci</h3>
+        <p>
+          Email: info@stocktracker.com<br>
+          Telefono: +39 123 456 7890<br>
+          Indirizzo: Via Roma 123, Milano
+        </p>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="footer-bottom">
+      <p>&copy; {{ currentYear }} {{ companyInfo.name }}. Tutti i diritti riservati. Progetto realizzato per scopi didattici.</p>
+    </div>
+  </div>
+</footer>
