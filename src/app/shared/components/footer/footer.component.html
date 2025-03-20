@@ -1,42 +1,43 @@
-<footer class="footer">
+<footer class="bg-light mt-5 py-4 border-top">
   <div class="container">
-    <div class="footer-content">
+    <div class="row">
       <!-- Informazioni sull'applicazione -->
-      <div class="footer-section">
-        <h3>{{ companyInfo.name }}</h3>
-        <p>{{ companyInfo.description }}</p>
-        <div class="social-links">
-          <a *ngFor="let social of socialLinks" [href]="social.url" target="_blank" [attr.aria-label]="social.name">
+      <div class="col-md-4 mb-4">
+        <h5 class="mb-3">{{ companyInfo.name }}</h5>
+        <p class="text-muted">{{ companyInfo.description }}</p>
+        <div class="d-flex mt-3">
+          <a *ngFor="let social of socialLinks" [href]="social.url" target="_blank" [attr.aria-label]="social.name"
+             class="me-2 btn btn-sm btn-light rounded-circle">
             <i [class]="social.icon"></i>
           </a>
         </div>
       </div>
 
       <!-- Link utili -->
-      <div class="footer-section">
-        <h3>Link Utili</h3>
-        <ul>
-          <li *ngFor="let link of usefulLinks">
-            <a [routerLink]="link.url">{{ link.name }}</a>
+      <div class="col-md-2 mb-4">
+        <h5 class="mb-3">Link Utili</h5>
+        <ul class="list-unstyled">
+          <li *ngFor="let link of usefulLinks" class="mb-2">
+            <a [routerLink]="link.url" class="text-decoration-none text-muted">{{ link.name }}</a>
           </li>
         </ul>
       </div>
 
       <!-- Supporto -->
-      <div class="footer-section">
-        <h3>Supporto</h3>
-        <ul>
-          <li *ngFor="let link of supportLinks">
-            <a [routerLink]="link.url">{{ link.name }}</a>
+      <div class="col-md-2 mb-4">
+        <h5 class="mb-3">Supporto</h5>
+        <ul class="list-unstyled">
+          <li *ngFor="let link of supportLinks" class="mb-2">
+            <a [routerLink]="link.url" class="text-decoration-none text-muted">{{ link.name }}</a>
           </li>
         </ul>
       </div>
 
       <!-- Contatti -->
-      <div class="footer-section">
-        <h3>Contattaci</h3>
-        <p>
-          Email: <br>
+      <div class="col-md-4 mb-4">
+        <h5 class="mb-3">Contattaci</h5>
+        <p class="text-muted">
+          Email: email <br>
           Telefono: +39 123 456 7890<br>
           Indirizzo: Via Roma 123, Milano
         </p>
@@ -44,8 +45,8 @@
     </div>
 
     <!-- Copyright -->
-    <div class="footer-bottom">
-      <p>&copy; {{ currentYear }} {{ companyInfo.name }}. Tutti i diritti riservati. Progetto realizzato per scopi didattici.</p>
+    <div class="text-center text-muted pt-3 border-top mt-3">
+      <p class="mb-0">&copy; {{ currentYear }} {{ companyInfo.name }}. Tutti i diritti riservati. Progetto realizzato per scopi didattici.</p>
     </div>
   </div>
 </footer>

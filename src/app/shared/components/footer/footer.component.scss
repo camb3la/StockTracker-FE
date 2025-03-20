@@ -93,15 +93,3 @@
   }
 }
 
-// Responsive styles
-@media (max-width: 768px) {
-  .footer {
-    .footer-content {
-      flex-direction: column;
-    }
-
-    .footer-section {
-      margin-bottom: 30px;
-    }
-  }
-}
