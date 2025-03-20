@@ -109,18 +109,3 @@
     }
   }
 }
-
-// Responsive styles
-@media (max-width: 480px) {
-  .auth-container {
-    padding: 20px 15px;
-
-    .auth-card {
-      padding: 20px;
-
-      h1 {
-        font-size: 22px;
-      }
-    }
-  }
-}
