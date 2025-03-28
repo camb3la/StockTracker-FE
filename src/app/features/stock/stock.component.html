@@ -1,0 +1,49 @@
+<div class="stock-detail-container">
+  <div *ngIf="loading" class="loading">
+    Caricamento in corso...
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="stock" class="stock-info">
+    <div class="stock-header">
+      <h1>{{ stock.symbol }}</h1>
+      <h2>{{ stock.name }}</h2>
+      <div class="exchange">{{ stock.exchange }}</div>
+    </div>
+
+    <div class="stock-price-container">
+      <div class="current-price">{{ stock.price | currency:'EUR' }}</div>
+      <div class="price-change" [ngClass]="{'positive': stock.change > 0, 'negative': stock.change < 0}">
+        {{ stock.change | number:'.2-2' }} ({{ stock.changePercent | number:'.2-2' }}%)
+      </div>
+    </div>
+
+    <div class="stock-details">
+      <div class="detail-item">
+        <span class="label">Volume:</span>
+        <span class="value">{{ stock.volume | number }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Market Cap:</span>
+        <span class="value">{{ stock.marketCap | currency:'EUR':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="isAuthenticated" class="watchlist-actions">
+      <select [(ngModel)]="selectedWatchlistId">
+        <option value="" disabled>Seleziona una watchlist</option>
+        <option *ngFor="let watchlist of watchlists" [value]="watchlist.id">{{ watchlist.name }}</option>
+      </select>
+      <button [disabled]="!selectedWatchlistId" (click)="addToWatchlist()" class="btn btn-primary">Aggiungi alla Watchlist</button>
+    </div>
+
+    <div *ngIf="!isAuthenticated" class="login-prompt">
+      <p>Accedi per aggiungere questa azione alle tue watchlist</p>
+      <a routerLink="/login" class="btn btn-primary">Accedi</a>
+    </div>
+  </div>
+
+</div>
