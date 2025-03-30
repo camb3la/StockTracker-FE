@@ -10,7 +10,7 @@ import { JwtResponse, JwtPayload } from '../models/jwt-response.model';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api'; // URL base del tuo backend
+  private apiUrl = 'http://localhost:8080/api';
   private tokenKey = 'token';
 
   private authStateSubject = new BehaviorSubject<boolean>(false);
@@ -30,9 +30,23 @@ export class AuthService {
     });
   }
 
+  // Migliorata per invalidare token scaduti
   private checkAuthState(): void {
+    const token = this.getToken();
     const isValid = this.isTokenValid();
+
+    if (token && !isValid) {
+      console.log('Token scaduto o non valido, effettuo logout...');
+      this.clearAuthData();
+    }
+
     this.authStateSubject.next(isValid);
+  }
+
+  // Nuovo metodo per pulire tutti i dati di autenticazione
+  private clearAuthData(): void {
+    this.storage.removeItem(this.tokenKey);
+    this.authStateSubject.next(false);
   }
 
   register(username: string, email: string, password: string): Observable<any> {
@@ -48,7 +62,6 @@ export class AuthService {
       .pipe(
         tap((response: any) => {
           console.log('Risposta dal server:', response);
-          // Non salviamo il token in localStorage perché il backend non lo invia con la registrazione
         }),
         catchError(error => {
           console.error('Errore durante la registrazione:', error);
@@ -77,7 +90,8 @@ export class AuthService {
           // Salva il token se presente nella risposta
           if (response && response.token) {
             this.storage.setItem(this.tokenKey, response.token);
-            this.authStateSubject.next(true);
+            this.authStateSubject.next(true); // Emette un evento per indicare l'autenticazione avvenuta
+            console.log('Login effettuato con successo, token salvato');
           }
         }),
         catchError(error => {
@@ -87,14 +101,26 @@ export class AuthService {
       );
   }
 
+  // Metodo di logout migliorato
   logout(): void {
-    this.storage.removeItem(this.tokenKey);
-    this.authStateSubject.next(false);
+    console.log('Esecuzione logout');
+    this.clearAuthData();
+    console.log('Logout eseguito con successo, reindirizzamento a login');
     this.router.navigate(['/login']);
   }
 
+  // Metodo per forzare il logout (utile per debugging)
+  forceLogout(): void {
+    console.log('Esecuzione logout forzato');
+    this.clearAuthData();
+    console.log('Logout forzato eseguito');
+    window.location.href = '/login'; // Usa un redirect completo invece di router.navigate
+  }
+
   isAuthenticated(): boolean {
-    return this.isTokenValid();
+    const isValid = this.isTokenValid();
+    console.log('Verifica stato autenticazione:', isValid);
+    return isValid;
   }
 
   getToken(): string | null {
@@ -107,6 +133,7 @@ export class AuthService {
       // Dividi il token in 3 parti (header.payload.signature)
       const parts = token.split('.');
       if (parts.length !== 3) {
+        console.error('Token formato invalido');
         return null;
       }
 
@@ -132,12 +159,23 @@ export class AuthService {
     try {
       const payload = this.decodeToken(token);
       if (!payload) {
+        console.error('Payload del token non valido');
         return false;
       }
 
       // Verifica la scadenza del token
       const currentTime = Math.floor(Date.now() / 1000); // Converti in secondi
-      return payload.exp > currentTime;
+      const isValid = payload.exp > currentTime;
+
+      if (!isValid) {
+        console.log('Token scaduto', {
+          expiration: new Date(payload.exp * 1000),
+          now: new Date(),
+          secondsLeft: payload.exp - currentTime
+        });
+      }
+
+      return isValid;
     } catch (error) {
       console.error('Errore nella verifica del token:', error);
       return false;
@@ -152,7 +190,14 @@ export class AuthService {
     }
 
     try {
-      return null;
+      const payload = this.decodeToken(token);
+      if (!payload) return null;
+
+      return {
+        id: payload['id'] || 0,
+        username: payload['sub'] || '',
+        email: payload['email'] || ''
+      };
     } catch (error) {
       console.error('Errore nell\'ottenere informazioni utente:', error);
       return null;

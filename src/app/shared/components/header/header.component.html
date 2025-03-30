@@ -1,4 +1,3 @@
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container">
     <a class="navbar-brand" routerLink="/">StockTracker</a>
@@ -7,13 +6,24 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
+        <!-- Menu di navigazione visibile solo se autenticato -->
+        <li class="nav-item" *ngIf="isAuthenticated">
           <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
         </li>
+        <li class="nav-item" *ngIf="isAuthenticated">
+          <a class="nav-link" routerLink="/stock" routerLinkActive="active">Azioni</a>
+        </li>
       </ul>
-      <div class="d-flex">
+
+      <!-- Pulsanti quando NON autenticato -->
+      <div class="d-flex" *ngIf="!isAuthenticated">
         <a routerLink="/login" class="btn btn-outline-primary me-2">Accedi</a>
         <a routerLink="/register" class="btn btn-primary">Registrati</a>
+      </div>
+
+      <!-- Pulsante di logout quando autenticato -->
+      <div class="d-flex" *ngIf="isAuthenticated">
+        <button (click)="logout()" class="btn btn-outline-danger">Logout</button>
       </div>
     </div>
   </div>
