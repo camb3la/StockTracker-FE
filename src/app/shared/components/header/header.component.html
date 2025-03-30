@@ -1,41 +1,20 @@
-<header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-  <div class="container">
-    <a class="navbar-brand fw-bold text-primary" routerLink="/">StockTracker</a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">StockTracker</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
         </li>
-        <li class="nav-item" *ngIf="currentUser">
-          <a class="nav-link" routerLink="/watchlist" routerLinkActive="active">Watchlist</a>
-        </li>
-        <li class="nav-item" *ngIf="currentUser">
-          <a class="nav-link" routerLink="/price-analysis" routerLinkActive="active">Analisi Prezzi</a>
-        </li>
       </ul>
-
       <div class="d-flex">
-        <ng-container *ngIf="!currentUser">
-          <a routerLink="/login" class="btn btn-outline-primary me-2">Accedi</a>
-          <a routerLink="/register" class="btn btn-primary">Registrati</a>
-        </ng-container>
-
-        <div class="dropdown" *ngIf="currentUser">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
-            {{ currentUser.username }}
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" routerLink="/profile">Profilo</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" (click)="logout()">Logout</a></li>
-          </ul>
-        </div>
+        <a routerLink="/login" class="btn btn-outline-primary me-2">Accedi</a>
+        <a routerLink="/register" class="btn btn-primary">Registrati</a>
       </div>
     </div>
   </div>
-</header>
+</nav>
