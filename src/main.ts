@@ -1,23 +1,14 @@
-import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AppComponent } from './app/app.component';
+import { JwtInterceptor } from './app/core/auth/jwt.Interceptor';
+import { appConfig } from './app/app.config';
 
-@Injectable()
-export class JwtInterceptor implements HttpInterceptor {
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Ottieni il token dal localStorage
-    const token = localStorage.getItem('token');
-
-    // Se c'è un token e la richiesta è verso il nostro API
-    if (token && request.url.includes('localhost:8080')) {
-      // Clona la richiesta e aggiungi l'header di autorizzazione
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    }
-
-    return next.handle(request);
-  }
-}
+bootstrapApplication(AppComponent, {
+  providers: [
+    ...appConfig.providers,
+    provideHttpClient(withInterceptorsFromDi()),
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
+  ]
+}).catch(err => console.error(err));
