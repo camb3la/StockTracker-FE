@@ -1,7 +1,18 @@
-import { Stock } from './stock.model';
+export interface Stock {
+  symbol: string;
+  name?: string;
+  price?: number;
+  change?: number;
+}
 
 export interface Watchlist {
-  id: string;
+  id: number;
   name: string;
-  stocks: Stock[];
+  description: string;
+  stocks: Stock[] | null;
+}
+
+export interface CreateWatchlistRequest {
+  name: string;
+  description: string;
 }

@@ -1,42 +1,156 @@
-<div class="dashboard-container">
-  <h1>Dashboard di Mercato</h1>
-
-  <div class="search-container">
-    <input
-      type="text"
-      [(ngModel)]="searchQuery"
-      placeholder="Cerca azioni per simbolo o nome..."
-      (keyup.enter)="searchStocks()"
-    />
-    <button (click)="searchStocks()" class="btn btn-primary">Cerca</button>
+<div class="container py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>Dashboard</h1>
+      <p class="text-muted">Benvenuto nella tua dashboard personale di StockTracker</p>
+    </div>
   </div>
 
-  <div *ngIf="loading" class="loading">
-    Caricamento in corso...
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Azioni Tracciate</h5>
+          <p class="card-text display-4">{{stockStats.totalTracked}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Preferiti</h5>
+          <p class="card-text display-4">{{stockStats.favorites}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Trend</h5>
+          <p class="card-text display-4">{{stockStats.trending}}</p>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div *ngIf="error" class="error-message">
-    {{ error }}
+  <!-- Watchlist Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Le Tue Watchlist</h2>
+        <button class="btn btn-primary" (click)="toggleCreateForm()">
+          <i class="fa fa-plus mr-2"></i> Crea Watchlist
+        </button>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-danger mb-3">
+        {{ error }}
+      </div>
+
+      <!-- Create Watchlist Form -->
+      <div *ngIf="showCreateForm" class="card mb-4">
+        <div class="card-body">
+          <h3 class="card-title">Nuova Watchlist</h3>
+          <form [formGroup]="watchlistForm" (ngSubmit)="createWatchlist()">
+            <div class="mb-3">
+              <label for="name" class="form-label">Nome</label>
+              <input type="text" class="form-control" id="name" formControlName="name">
+              <div *ngIf="watchlistForm.get('name')?.invalid && watchlistForm.get('name')?.touched" class="text-danger">
+                Il nome è obbligatorio (minimo 3 caratteri)
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Descrizione</label>
+              <textarea class="form-control" id="description" rows="3" formControlName="description"></textarea>
+              <div *ngIf="watchlistForm.get('description')?.invalid && watchlistForm.get('description')?.touched" class="text-danger">
+                La descrizione è obbligatoria
+              </div>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="button" class="btn btn-outline-secondary me-2" (click)="toggleCreateForm()">Annulla</button>
+              <button type="submit" class="btn btn-primary" [disabled]="watchlistForm.invalid || isSubmitting">
+                {{ isSubmitting ? 'Creazione in corso...' : 'Crea' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Caricamento...</span>
+        </div>
+        <p class="mt-2">Caricamento watchlist in corso...</p>
+      </div>
+
+      <!-- No Watchlists Message -->
+      <div *ngIf="!isLoading && watchlists.length === 0" class="card">
+        <div class="card-body text-center py-5">
+          <p class="mb-3">Non hai ancora creato nessuna watchlist</p>
+          <button class="btn btn-primary" (click)="toggleCreateForm()">
+            Crea la tua prima watchlist
+          </button>
+        </div>
+      </div>
+
+      <!-- Watchlists Cards -->
+      <div *ngIf="!isLoading && watchlists.length > 0" class="row">
+        <div *ngFor="let watchlist of watchlists" class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">{{ watchlist.name }}</h5>
+              <p class="card-text">{{ watchlist.description }}</p>
+              <p class="card-text">
+                <small class="text-muted">
+                  {{ watchlist.stocks ? watchlist.stocks.length : 0 }} azioni
+                </small>
+              </p>
+            </div>
+            <div class="card-footer bg-transparent d-flex justify-content-between">
+              <a [routerLink]="['/watchlist', watchlist.id]" class="btn btn-sm btn-outline-primary">
+                Visualizza
+              </a>
+              <button class="btn btn-sm btn-outline-danger" (click)="deleteWatchlist(watchlist.id)">
+                Elimina
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="stocks-grid">
-    <div *ngFor="let stock of stocks" class="stock-card">
-      <div class="stock-header">
-        <h3>{{ stock.symbol }}</h3>
-        <span>{{ stock.name }}</span>
+  <!-- Recent Stocks -->
+  <div class="row">
+    <div class="col-12">
+      <h2>Azioni Recenti</h2>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>Simbolo</th>
+            <th>Nome</th>
+            <th>Prezzo</th>
+            <th>Variazione %</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let stock of recentStocks">
+            <td><strong>{{stock.symbol}}</strong></td>
+            <td>{{stock.name}}</td>
+            <td>€{{stock.price}}</td>
+            <td [ngClass]="{'text-success': stock.change > 0, 'text-danger': stock.change < 0}">
+              {{stock.change > 0 ? '+' : ''}}{{stock.change}}%
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="stock-price">
-        {{ stock.price | currency:'EUR' }}
-      </div>
-      <div class="stock-change" [ngClass]="{'positive': stock.change > 0, 'negative': stock.change < 0}">
-        {{ stock.change | number:'.2-2' }} ({{ stock.changePercent | number:'.2-2' }}%)
-      </div>
-      <div class="stock-details">
-        <div>Volume: {{ stock.volume | number }}</div>
-        <div>Market Cap: {{ stock.marketCap | currency:'EUR':'symbol':'1.0-0' }}</div>
-      </div>
-      <div class="stock-actions">
-        <a [routerLink]="['/stock', stock.symbol]" class="btn btn-outline">Dettagli</a>
+      <div class="d-flex justify-content-center mt-3">
+        <a routerLink="/stock" class="btn btn-primary">Visualizza Tutte le Azioni</a>
       </div>
     </div>
   </div>

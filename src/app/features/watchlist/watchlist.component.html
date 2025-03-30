@@ -1,0 +1,119 @@
+<div class="container py-4">
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Caricamento...</span>
+    </div>
+    <p class="mt-2">Caricamento watchlist in corso...</p>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Watchlist detail content -->
+  <div *ngIf="!isLoading && watchlist">
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h1>{{ watchlist.name }}</h1>
+            <p class="text-muted">{{ watchlist.description }}</p>
+          </div>
+          <div>
+            <button class="btn btn-outline-danger" (click)="deleteWatchlist()">
+              Elimina Watchlist
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add stock form -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Aggiungi Azione</h5>
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Inserisci simbolo azione (es. AAPL)"
+                [(ngModel)]="newStockSymbol"
+              >
+              <button
+                class="btn btn-primary"
+                type="button"
+                (click)="addStock()"
+                [disabled]="!newStockSymbol"
+              >
+                Aggiungi
+              </button>
+            </div>
+            <small class="form-text text-muted">
+              Inserisci il simbolo dell'azione che vuoi aggiungere alla tua watchlist.
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stocks list -->
+    <div class="row">
+      <div class="col-12">
+        <h2>Azioni nella Watchlist</h2>
+
+        <!-- No stocks message -->
+        <div *ngIf="!watchlist.stocks || watchlist.stocks.length === 0" class="card">
+          <div class="card-body text-center py-5">
+            <p>Non ci sono ancora azioni in questa watchlist.</p>
+            <p class="text-muted">Aggiungi azioni usando il form qui sopra.</p>
+          </div>
+        </div>
+
+        <!-- Stocks table -->
+        <div *ngIf="watchlist.stocks && watchlist.stocks.length > 0" class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th>Simbolo</th>
+              <th>Nome</th>
+              <th>Prezzo</th>
+              <th>Variazione</th>
+              <th>Azioni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let stock of watchlist.stocks">
+              <td><strong>{{ stock.symbol }}</strong></td>
+              <td>{{ stock.name || 'N/A' }}</td>
+              <td>{{ stock.price ? ('€' + stock.price) : 'N/A' }}</td>
+              <td [ngClass]="{'text-success': stock.change && stock.change > 0, 'text-danger': stock.change && stock.change < 0}">
+                {{ stock.change ? ((stock.change > 0 ? '+' : '') + stock.change + '%') : 'N/A' }}
+              </td>
+              <td>
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="removeStock(stock.symbol)"
+                >
+                  Rimuovi
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12">
+        <a routerLink="/dashboard" class="btn btn-outline-secondary">
+          Torna alla Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

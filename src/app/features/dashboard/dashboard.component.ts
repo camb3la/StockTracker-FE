@@ -1,62 +1,113 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-
-import { StockService } from '../../core/services/stock.service';
-import { Stock } from '../../core/models/stock.model';
+import { WatchlistService } from '../../core/services/watchlist.service';
+import { Watchlist } from '../../core/models/watchlist.model';
 
 @Component({
   selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule]
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  stocks: Stock[] = [];
-  searchQuery: string = '';
-  loading: boolean = false;
+  // Dati per il dashboard
+  stockStats = {
+    totalTracked: 25,
+    favorites: 8,
+    trending: 12
+  };
+
+  recentStocks = [
+    { symbol: 'AAPL', name: 'Apple Inc.', price: 182.63, change: 2.5 },
+    { symbol: 'MSFT', name: 'Microsoft Corp.', price: 337.42, change: 1.2 },
+    { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 142.89, change: -0.8 },
+    { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 180.75, change: 1.7 }
+  ];
+
+  // Nuovi dati per watchlist
+  watchlists: Watchlist[] = [];
+  isLoading = true;
   error: string | null = null;
 
-  constructor(private stockService: StockService) { }
+  // Form per creare nuova watchlist
+  showCreateForm = false;
+  watchlistForm: FormGroup;
+  isSubmitting = false;
+
+  constructor(
+    private watchlistService: WatchlistService,
+    private fb: FormBuilder
+  ) {
+    this.watchlistForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      description: ['', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
-    this.loadDefaultStocks();
+    this.loadWatchlists();
   }
 
-  loadDefaultStocks(): void {
-    this.loading = true;
-    this.stockService.searchStocks('').subscribe(
-      (data) => {
-        this.stocks = data;
-        this.loading = false;
+  loadWatchlists(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this.watchlistService.getWatchlists().subscribe({
+      next: (data) => {
+        this.watchlists = data;
+        this.isLoading = false;
       },
-      (error) => {
-        this.error = 'Errore nel caricamento delle azioni';
-        this.loading = false;
-        console.error(error);
+      error: (err) => {
+        console.error('Errore nel caricamento delle watchlist:', err);
+        this.error = 'Impossibile caricare le watchlist. Riprova più tardi.';
+        this.isLoading = false;
       }
-    );
+    });
   }
 
-  searchStocks(): void {
-    if (!this.searchQuery.trim()) {
-      this.loadDefaultStocks();
+  toggleCreateForm(): void {
+    this.showCreateForm = !this.showCreateForm;
+    if (!this.showCreateForm) {
+      this.watchlistForm.reset();
+    }
+  }
+
+  createWatchlist(): void {
+    if (this.watchlistForm.invalid) {
       return;
     }
 
-    this.loading = true;
-    this.stockService.searchStocks(this.searchQuery).subscribe(
-      (data) => {
-        this.stocks = data;
-        this.loading = false;
+    this.isSubmitting = true;
+
+    this.watchlistService.createWatchlist(this.watchlistForm.value).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.showCreateForm = false;
+        this.watchlistForm.reset();
+        this.loadWatchlists(); // Ricarica le watchlist
       },
-      (error) => {
-        this.error = 'Errore nella ricerca delle azioni';
-        this.loading = false;
-        console.error(error);
+      error: (err) => {
+        console.error('Errore nella creazione della watchlist:', err);
+        this.error = 'Impossibile creare la watchlist. Riprova più tardi.';
+        this.isSubmitting = false;
       }
-    );
+    });
+  }
+
+  deleteWatchlist(id: number): void {
+    if (confirm('Sei sicuro di voler eliminare questa watchlist?')) {
+      this.watchlistService.deleteWatchlist(id).subscribe({
+        next: () => {
+          this.loadWatchlists(); // Ricarica le watchlist
+        },
+        error: (err) => {
+          console.error('Errore nell\'eliminazione della watchlist:', err);
+          this.error = 'Impossibile eliminare la watchlist. Riprova più tardi.';
+        }
+      });
+    }
   }
 }
