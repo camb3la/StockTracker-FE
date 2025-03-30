@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
+  styleUrls: ['./register.component.css'],
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule]
 })
 export class RegisterComponent implements OnInit {
@@ -46,6 +47,11 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(): void {
     if (this.registerForm.invalid) {
+      // Segna tutti i campi come touched per mostrare gli errori
+      Object.keys(this.registerForm.controls).forEach(key => {
+        const control = this.registerForm.get(key);
+        control?.markAsTouched();
+      });
       return;
     }
 
@@ -54,15 +60,15 @@ export class RegisterComponent implements OnInit {
 
     const { username, email, password } = this.registerForm.value;
 
-    this.authService.register(username, email, password).subscribe(
-      () => {
+    this.authService.register(username, email, password).subscribe({
+      next: () => {
         this.router.navigate(['/dashboard']);
       },
-      (error) => {
+      error: (error) => {
         this.error = 'Errore durante la registrazione. Riprova più tardi.';
         this.loading = false;
         console.error(error);
       }
-    );
+    });
   }
 }
