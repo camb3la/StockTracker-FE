@@ -1,52 +1,50 @@
-<footer class="bg-light mt-5 py-4 border-top">
+<footer class="footer mt-auto py-4 bg-light">
   <div class="container">
     <div class="row">
-      <!-- Informazioni sull'applicazione -->
-      <div class="col-md-4 mb-4">
-        <h5 class="mb-3">{{ companyInfo.name }}</h5>
-        <p class="text-muted">{{ companyInfo.description }}</p>
-        <div class="d-flex mt-3">
-          <a *ngFor="let social of socialLinks" [href]="social.url" target="_blank" [attr.aria-label]="social.name"
-             class="me-2 btn btn-sm btn-light rounded-circle">
-            <i [class]="social.icon"></i>
-          </a>
-        </div>
+      <!-- StockTracker Column -->
+      <div class="col-md-3 mb-3">
+        <h5>StockTracker</h5>
+        <p class="text-muted">Piattaforma per il monitoraggio e l'analisi delle azioni finanziarie. Visualizza, salva nei preferiti e analizza le fasce di prezzo per posizioni Long o Short.</p>
       </div>
 
-      <!-- Link utili -->
-      <div class="col-md-2 mb-4">
-        <h5 class="mb-3">Link Utili</h5>
+      <!-- Link Utili Column -->
+      <div class="col-md-3 mb-3">
+        <h5>Link Utili</h5>
         <ul class="list-unstyled">
-          <li *ngFor="let link of usefulLinks" class="mb-2">
-            <a [routerLink]="link.url" class="text-decoration-none text-muted">{{ link.name }}</a>
-          </li>
+          <li><a routerLink="/" class="text-decoration-none">Home</a></li>
+          <li><a routerLink="/dashboard" class="text-decoration-none">Dashboard</a></li>
+          <li><a routerLink="/watchlist" class="text-decoration-none">Watchlist</a></li>
         </ul>
       </div>
 
-      <!-- Supporto -->
-      <div class="col-md-2 mb-4">
-        <h5 class="mb-3">Supporto</h5>
+      <!-- Supporto Column -->
+      <div class="col-md-3 mb-3">
+        <h5>Supporto</h5>
         <ul class="list-unstyled">
-          <li *ngFor="let link of supportLinks" class="mb-2">
-            <a [routerLink]="link.url" class="text-decoration-none text-muted">{{ link.name }}</a>
-          </li>
+          <li><a routerLink="/faq" class="text-decoration-none">FAQ</a></li>
+          <li><a routerLink="/contatti" class="text-decoration-none">Contatti</a></li>
+          <li><a routerLink="/termini" class="text-decoration-none">Termini di Servizio</a></li>
         </ul>
       </div>
 
-      <!-- Contatti -->
-      <div class="col-md-4 mb-4">
-        <h5 class="mb-3">Contattaci</h5>
-        <p class="text-muted">
-          Email: email <br>
-          Telefono: +39 123 456 7890<br>
-          Indirizzo: Via Roma 123, Milano
-        </p>
+      <!-- Contattaci Column -->
+      <div class="col-md-3 mb-3">
+        <h5>Contattaci</h5>
+        <ul class="list-unstyled">
+          <li>Email: email</li>
+          <li>Telefono: +39 123 456 7890</li>
+          <li>Indirizzo: Via Roma 123, Milano</li>
+        </ul>
       </div>
     </div>
 
+    <hr>
+
     <!-- Copyright -->
-    <div class="text-center text-muted pt-3 border-top mt-3">
-      <p class="mb-0">&copy; {{ currentYear }} {{ companyInfo.name }}. Tutti i diritti riservati. Progetto realizzato per scopi didattici.</p>
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <p class="text-muted">© 2025 StockTracker. Tutti i diritti riservati.</p>
+      </div>
     </div>
   </div>
 </footer>
