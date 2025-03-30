@@ -1,4 +1,3 @@
-// auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -50,14 +49,13 @@ export class AuthService {
       );
   }
 
-  login(email: string, password: string): Observable<any> {
-    // Aggiorna anche l'endpoint di login se necessario
+  login(username: string, password: string): Observable<any> {
     const loginRequest = {
-      email: email,
+      username: username,
       password: password
     };
 
-    return this.http.post(`${this.apiUrl}/api/auth/login`, loginRequest, { headers: this.getHeaders(), responseType: 'text' })
+    return this.http.post(`${this.apiUrl}/api/auth/login`, loginRequest, { headers: this.getHeaders() })
       .pipe(
         tap((response: any) => {
           // Salva il token se presente nella risposta

@@ -8,16 +8,16 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="username">Username</label>
         <input
-          type="email"
-          id="email"
-          formControlName="email"
-          placeholder="Inserisci la tua email"
+          type="text"
+          id="username"
+          formControlName="username"
+          placeholder="Inserisci il tuo username"
         >
-        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error">
-          <span *ngIf="loginForm.get('email')?.errors?.['required']">L'email è obbligatoria</span>
-          <span *ngIf="loginForm.get('email')?.errors?.['email']">Inserisci un'email valida</span>
+        <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="error">
+          <span *ngIf="loginForm.get('username')?.errors?.['required']">Lo username è obbligatorio</span>
+          <span *ngIf="loginForm.get('username')?.errors?.['minlength']">Lo username deve essere di almeno 3 caratteri</span>
         </div>
       </div>
 
