@@ -1,104 +1,83 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+// auth.service.ts
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
-import { User } from '../models/user.model';
-import { AuthToken } from '../models/auth-token.models';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/auth';
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
-  private isBrowser: boolean;
+  private apiUrl = 'http://localhost:8080'; // URL base del tuo backend
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) platformId: Object
-  ) {
-    this.isBrowser = isPlatformBrowser(platformId);
+  constructor(private http: HttpClient, private router: Router) {}
 
-    if (this.isBrowser) {
-      const storedUser = localStorage.getItem('currentUser');
-      const storedToken = localStorage.getItem('token');
-      if (storedUser && storedToken) {
-        this.currentUserSubject.next(JSON.parse(storedUser));
-      }
-    }
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
   }
 
-  public get currentUserValue(): User | null {
-    return this.currentUserSubject.value;
-  }
+  register(username: string, email: string, password: string): Observable<any> {
+    console.log('Tentativo di registrazione con:', { username, email, password });
 
-  public get token(): string | null {
-    return this.isBrowser ? localStorage.getItem('token') : null;
-  }
+    const signupRequest = {
+      username: username,
+      email: email,
+      password: password
+    };
 
-  login(username: string, password: string): Observable<User> {
-    return this.http.post<AuthToken>(`${this.apiUrl}/login`, { username, password })
+    return this.http.post(`${this.apiUrl}/api/auth/signup`, signupRequest, { headers: this.getHeaders(), responseType: 'text' })
       .pipe(
-        map(response => {
-          // Converti la risposta del token in un oggetto User
-          const user: User = {
-            id: response.id.toString(),
-            username: response.username,
-            email: response.email,
-            watchlists: []
-          };
-
-          // Salva token e user nel localStorage
-          if (this.isBrowser) {
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('currentUser', JSON.stringify(user));
-          }
-
-          this.currentUserSubject.next(user);
-          return user;
+        tap((response: any) => {
+          console.log('Risposta dal server:', response);
+          // Il backend non sembra restituire un token nella registrazione,
+          // quindi qui non dovremmo salvare nulla nel localStorage
         }),
         catchError(error => {
-          console.error('Errore durante il login:', error);
-          return throwError(() => new Error('Credenziali non valide. Riprova.'));
+          console.error('Errore durante la registrazione:', error);
+          if (error.error instanceof ErrorEvent) {
+            console.error('Errore client:', error.error.message);
+          } else {
+            console.error(
+              `Codice stato: ${error.status}, ` +
+              `Messaggio: ${error.error?.body || error.message}`
+            );
+          }
+          return throwError(() => error);
         })
       );
   }
 
-  register(username: string, email: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/signup`, { username, email, password })
+  login(email: string, password: string): Observable<any> {
+    // Aggiorna anche l'endpoint di login se necessario
+    const loginRequest = {
+      email: email,
+      password: password
+    };
+
+    return this.http.post(`${this.apiUrl}/api/auth/login`, loginRequest, { headers: this.getHeaders(), responseType: 'text' })
       .pipe(
-        tap(() => {
-          // Dopo la registrazione, effettua automaticamente il login
-          this.login(username, password).subscribe();
+        tap((response: any) => {
+          // Salva il token se presente nella risposta
+          if (response && response.token) {
+            localStorage.setItem('token', response.token);
+          }
         }),
         catchError(error => {
-          console.error('Errore durante la registrazione:', error);
-          return throwError(() => new Error('Errore durante la registrazione. Riprova.'));
+          console.error('Errore durante il login:', error);
+          return throwError(() => error);
         })
       );
   }
 
   logout(): void {
-    if (this.isBrowser) {
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('token');
-    }
-
-    this.currentUserSubject.next(null);
+    localStorage.removeItem('token');
+    this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
-    return !!this.currentUserValue && !!this.token;
-  }
-
-  // Metodo per ottenere gli headers con il token di autenticazione
-  getAuthHeaders(): HttpHeaders {
-    const token = this.token;
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
+    return !!localStorage.getItem('token');
   }
 }
