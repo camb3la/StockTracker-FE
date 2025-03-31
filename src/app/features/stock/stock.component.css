@@ -1,0 +1,80 @@
+/* Personalizzazioni per la barra di ricerca */
+.search-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  border-color: #86b7fe;
+}
+
+/* Stili per i risultati di ricerca */
+.list-group-item {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Stili per i dettagli delle azioni */
+.card-header {
+  background-color: #f8f9fa;
+}
+
+/* Stili per il grafico */
+.chart-container {
+  min-height: 300px;
+  position: relative;
+}
+
+/* Colori personalizzati per le variazioni di prezzo */
+.text-success {
+  color: #198754 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+/* Personalizzazioni responsive */
+@media (max-width: 768px) {
+  .btn-group {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Stile per loading spinner */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+/* Stili per migliorare la visualizzazione su dispositivi mobili */
+@media (max-width: 576px) {
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .card-body {
+    padding: 0.75rem;
+  }
+}
+
+/* Miglioramenti opzionali per l'estetica */
+.stock-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.stock-price {

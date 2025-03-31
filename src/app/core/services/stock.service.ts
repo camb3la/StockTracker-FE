@@ -1,38 +1,27 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { Stock } from '../models/stock.model';
-import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StockService {
-  private apiUrl = 'http://localhost:8080/stock';
+  private apiUrl = 'http://localhost:8080/api';
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) { }
+  constructor(private http: HttpClient) { }
 
-  searchStocks(query: string): Observable<Stock[]> {
-    const params = new HttpParams().set('query', query);
-    return this.http.get<Stock[]>(`${this.apiUrl}/search`, { params });
-  }
-
+  // Ottieni dettagli di un'azione specifica
   getStockDetails(symbol: string): Observable<Stock> {
-    return this.http.get<Stock>(`${this.apiUrl}/details/${symbol}`);
+    const url = `${this.apiUrl}/stock/details/${symbol}`;
+
+    return this.http.get<Stock>(url).pipe(
+      tap(response => console.log('Dettagli azione ricevuti:', response)),
+      catchError(error => {
+        console.error('Errore nel recupero dei dettagli dell\'azione:', error);
+        return throwError(() => new Error('Impossibile recuperare i dettagli dell\'azione'));
+      })
+    );
   }
-
-   getStockBySymbol(symbol: string): Observable<Stock> {
-      return this.getStockDetails(symbol);
-    }
-
-    getStockHistory(symbol: string, interval: string, range: string): Observable<any> {
-      const params = new HttpParams()
-        .set('symbol', symbol)
-        .set('interval', interval)
-        .set('range', range);
-      return this.http.get<any>(`${this.apiUrl}/history`, { params }) ;
-    }
 }

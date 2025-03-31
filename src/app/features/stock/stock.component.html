@@ -1,49 +1,72 @@
-<div class="stock-detail-container">
-  <div *ngIf="loading" class="loading">
-    Caricamento in corso...
-  </div>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12 mb-4">
+      <h1>Dettagli Azione</h1>
 
-  <div *ngIf="error" class="error-message">
-    {{ error }}
-  </div>
+      <!-- Barra di input per il simbolo dell'azione -->
+      <div class="row mb-3">
+        <div class="col-md-10">
+          <input
+            type="text"
+            [formControl]="searchControl"
+            placeholder="Inserisci simbolo azione (es. AAPL)"
+            class="form-control"
+            aria-label="Cerca azione"
+          >
+        </div>
+        <div class="col-md-2">
+          <button
+            class="btn btn-primary w-100"
+            type="button"
+            (click)="selectStock()"
+            [disabled]="loading"
+          >
+            <span *ngIf="!loading">Cerca</span>
+            <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
 
-  <div *ngIf="stock" class="stock-info">
-    <div class="stock-header">
-      <h1>{{ stock.symbol }}</h1>
-      <h2>{{ stock.name }}</h2>
-      <div class="exchange">{{ stock.exchange }}</div>
-    </div>
+      <!-- Messaggi di errore -->
+      <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+      </div>
 
-    <div class="stock-price-container">
-      <div class="current-price">{{ stock.price | currency:'EUR' }}</div>
-      <div class="price-change" [ngClass]="{'positive': stock.change > 0, 'negative': stock.change < 0}">
-        {{ stock.change | number:'.2-2' }} ({{ stock.changePercent | number:'.2-2' }}%)
+      <!-- Dettagli dell'azione selezionata -->
+      <div *ngIf="selectedStock" class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="mb-0">{{ selectedStock.name }} ({{ selectedStock.symbol }})</h2>
+            <small>{{ selectedStock.exchangeName }} • {{ selectedStock.currency }}</small>
+          </div>
+
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <h3 class="mb-0">{{ selectedStock.currentPrice | currency:selectedStock.currency }}</h3>
+                <span
+                  [ngClass]="{'text-success': selectedStock.dailyChange! > 0, 'text-danger': selectedStock.dailyChange! < 0}"
+                >
+                  {{ selectedStock.dailyChange | number:'1.2-2' }} ({{ selectedStock.dailyChangePercent | number:'1.2-2' }}%)
+                </span>
+              </div>
+
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-6">
+                    <small class="text-muted">Volume</small>
+                    <p>{{ selectedStock.volume | number }}</p>
+                  </div>
+                  <div class="col-6">
+                    <small class="text-muted">Capitalizzazione</small>
+                    <p>{{ selectedStock.marketCap | number }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <div class="stock-details">
-      <div class="detail-item">
-        <span class="label">Volume:</span>
-        <span class="value">{{ stock.volume | number }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="label">Market Cap:</span>
-        <span class="value">{{ stock.marketCap | currency:'EUR':'symbol':'1.0-0' }}</span>
-      </div>
-    </div>
-
-    <div *ngIf="isAuthenticated" class="watchlist-actions">
-      <select [(ngModel)]="selectedWatchlistId">
-        <option value="" disabled>Seleziona una watchlist</option>
-        <option *ngFor="let watchlist of watchlists" [value]="watchlist.id">{{ watchlist.name }}</option>
-      </select>
-      <button [disabled]="!selectedWatchlistId" (click)="addToWatchlist()" class="btn btn-primary">Aggiungi alla Watchlist</button>
-    </div>
-
-    <div *ngIf="!isAuthenticated" class="login-prompt">
-      <p>Accedi per aggiungere questa azione alle tue watchlist</p>
-      <a routerLink="/login" class="btn btn-primary">Accedi</a>
-    </div>
   </div>
-
 </div>
