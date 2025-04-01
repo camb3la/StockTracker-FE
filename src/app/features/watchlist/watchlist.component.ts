@@ -43,6 +43,11 @@ export class WatchlistComponent implements OnInit {
     this.watchlistService.getWatchlistById(id).subscribe({
       next: (data) => {
         this.watchlist = data;
+        // Assicuriamoci che stocks sia sempre un array
+        if (!this.watchlist.stocks) {
+          this.watchlist.stocks = [];
+        }
+        console.log('Watchlist caricata:', this.watchlist);
         this.isLoading = false;
       },
       error: (err) => {
@@ -59,15 +64,31 @@ export class WatchlistComponent implements OnInit {
     }
 
     const symbol = this.newStockSymbol.trim().toUpperCase();
+    this.isLoading = true;
 
     this.watchlistService.addStockToWatchlist(this.watchlist.id, symbol).subscribe({
       next: (updatedWatchlist) => {
+        // Assicuriamoci che la watchlist completa venga aggiornata, non solo l'ultima azione
         this.watchlist = updatedWatchlist;
+        // Assicuriamoci che stocks sia sempre un array
+        if (!this.watchlist.stocks) {
+          this.watchlist.stocks = [];
+        }
+        console.log('Watchlist aggiornata dopo aggiunta:', this.watchlist);
+
         this.newStockSymbol = '';
+        this.error = null;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Errore nell\'aggiunta dell\'azione:', err);
-        this.error = `Impossibile aggiungere l'azione ${symbol}. Verifica che il simbolo sia corretto.`;
+
+        if (err.status === 409) {
+          this.error = `L'azione ${symbol} è già presente nella tua watchlist.`;
+        } else {
+          this.error = `Impossibile aggiungere l'azione ${symbol}. Verifica che il simbolo sia corretto.`;
+        }
+        this.isLoading = false;
       }
     });
   }
@@ -77,13 +98,21 @@ export class WatchlistComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true;
+
     this.watchlistService.removeStockFromWatchlist(this.watchlist.id, symbol).subscribe({
       next: (updatedWatchlist) => {
         this.watchlist = updatedWatchlist;
+        // Assicuriamoci che stocks sia sempre un array
+        if (!this.watchlist.stocks) {
+          this.watchlist.stocks = [];
+        }
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Errore nella rimozione dell\'azione:', err);
         this.error = `Impossibile rimuovere l'azione ${symbol}.`;
+        this.isLoading = false;
       }
     });
   }
@@ -93,6 +122,8 @@ export class WatchlistComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true;
+
     this.watchlistService.deleteWatchlist(this.watchlist.id).subscribe({
       next: () => {
         this.router.navigate(['/dashboard']);
@@ -100,6 +131,7 @@ export class WatchlistComponent implements OnInit {
       error: (err) => {
         console.error('Errore nell\'eliminazione della watchlist:', err);
         this.error = 'Impossibile eliminare la watchlist.';
+        this.isLoading = false;
       }
     });
   }

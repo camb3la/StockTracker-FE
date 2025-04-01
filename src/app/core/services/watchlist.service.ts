@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Watchlist, CreateWatchlistRequest } from '../models/watchlist.model';
 
 @Injectable({
@@ -23,7 +23,9 @@ export class WatchlistService {
 
   // Ottieni una watchlist specifica per ID
   getWatchlistById(id: number): Observable<Watchlist> {
-    return this.http.get<Watchlist>(`${this.apiUrl}/${id}`);
+    return this.http.get<Watchlist>(`${this.apiUrl}/${id}`).pipe(
+      tap(response => console.log('Watchlist ricevuta:', response))
+    );
   }
 
   // Elimina una watchlist
@@ -33,7 +35,12 @@ export class WatchlistService {
 
   // Aggiungi un'azione alla watchlist
   addStockToWatchlist(watchlistId: number, stockSymbol: string): Observable<Watchlist> {
-    return this.http.post<Watchlist>(`${this.apiUrl}/${watchlistId}/stocks/${stockSymbol}`, {});
+    return this.http.post<Watchlist>(
+      `${this.apiUrl}/${watchlistId}/stocks`,
+      { symbol: stockSymbol }
+    ).pipe(
+      tap(response => console.log('Risposta dopo aggiunta azione:', response))
+    );
   }
 
   // Rimuovi un'azione dalla watchlist
