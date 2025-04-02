@@ -73,7 +73,11 @@ export class WatchlistComponent implements OnInit {
         // Assicuriamoci che stocks sia sempre un array
         if (!this.watchlist.stocks) {
           this.watchlist.stocks = [];
+        } else if (!Array.isArray(this.watchlist.stocks)) {
+               // Correggi se non è un array (potrebbe essere un oggetto)
+               this.watchlist.stocks = Object.values(this.watchlist.stocks);
         }
+
         console.log('Watchlist aggiornata dopo aggiunta:', this.watchlist);
 
         this.newStockSymbol = '';
