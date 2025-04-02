@@ -68,13 +68,13 @@ export class WatchlistComponent implements OnInit {
 
     this.watchlistService.addStockToWatchlist(this.watchlist.id, symbol).subscribe({
       next: (updatedWatchlist) => {
-        // Assicuriamoci che la watchlist completa venga aggiornata, non solo l'ultima azione
+        // Aggiorniamo la watchlist
         this.watchlist = updatedWatchlist;
         // Assicuriamoci che stocks sia sempre un array
         if (!this.watchlist.stocks) {
           this.watchlist.stocks = [];
         } else if (!Array.isArray(this.watchlist.stocks)) {
-               // Correggi se non è un array (potrebbe essere un oggetto)
+
                this.watchlist.stocks = Object.values(this.watchlist.stocks);
         }
 

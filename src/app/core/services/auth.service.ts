@@ -30,7 +30,6 @@ export class AuthService {
     });
   }
 
-  // Migliorata per invalidare token scaduti
   private checkAuthState(): void {
     const token = this.getToken();
     const isValid = this.isTokenValid();
@@ -109,7 +108,7 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  // Metodo per forzare il logout (utile per debugging)
+  // Metodo per forzare il logout
   forceLogout(): void {
     console.log('Esecuzione logout forzato');
     this.clearAuthData();
