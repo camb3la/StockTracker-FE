@@ -88,10 +88,9 @@
             <tbody>
             <tr *ngFor="let stock of watchlist.stocks">
               <td><strong>{{ stock.symbol }}</strong></td>
-              <td>{{ stock.name || 'N/A' }}</td>
-              <td>{{ stock.price ? ('€' + stock.price) : 'N/A' }}</td>
-              <td [ngClass]="{'text-success': stock.change && stock.change > 0, 'text-danger': stock.change && stock.change < 0}">
-                {{ stock.change ? ((stock.change > 0 ? '+' : '') + stock.change + '%') : 'N/A' }}
+              <td>{{ stock.currentPrice ? ('€' + stock.currentPrice) : 'N/A' }}</td>
+              <td [ngClass]="{'text-success': stock.dailyChangePercent && stock.dailyChangePercent > 0, 'text-danger': stock.dailyChangePercent && stock.dailyChangePercent < 0}">
+                {{ stock.dailyChangePercent ? ((stock.dailyChangePercent > 0 ? '+' : '') + stock.dailyChangePercent + '%') : 'N/A' }}
               </td>
               <td>
                 <button
