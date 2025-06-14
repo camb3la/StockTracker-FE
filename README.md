@@ -1,8 +1,7 @@
 # 📈 StockTracker-FE
 
 > ⚠️ This is **only the frontend module** of the StockTracker project, built with Angular.  
-> The backend module can be found [here](https://github.com/your-backend-repo). <!-- Replace this link with your actual backend repo -->
-
+> The backend module can be found [here](https://github.com/camb3la/StockTracker-BE)
 **StockTracker** is a web application that allows registered users to search for stocks using the [Alpha Vantage](https://www.alphavantage.co/) API, view key financial data, and manage a personalized watchlist. The project provides a clean and responsive interface for monitoring your favorite stocks with ease.
 
 ---
