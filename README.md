@@ -22,7 +22,7 @@
 - [Angular](https://angular.io/) – Frontend framework  
 - [RxJS](https://rxjs.dev/) – Reactive programming  
 - [Alpha Vantage API](https://www.alphavantage.co/) – Financial data provider  
-- [Bootstrap/Tailwind/Other?] – For styling (please specify if needed)  
+- [Bootstrap] – For styling (please specify if needed)  
 - [Angular Router, Forms, HTTP Client] – Angular core modules
 
 ---
